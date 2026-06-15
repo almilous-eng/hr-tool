@@ -12,14 +12,24 @@ st.set_page_config(page_title="HR Analytics Dashboard", layout="wide")
 # =========================================================
 # DATA LOADING (CACHED)
 # =========================================================
+import os
+
 @st.cache_data
 def load_data():
-    df = pd.read_csv("data/hr_data.csv")
+    path = os.path.join("data", "hr_dataset_nrw.csv")
+    df = pd.read_csv(path)
 
-    # Parse dates
     df["Hire date"] = pd.to_datetime(df["Hire date"])
-
     return df
+
+# @st.cache_data
+# def load_data():
+#     df = pd.read_csv("data/hr_dataset_nrw.csv")
+
+#     # Parse dates
+#     df["Hire date"] = pd.to_datetime(df["Hire date"])
+
+#     return df
 
 df = load_data()
 
