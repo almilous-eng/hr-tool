@@ -116,7 +116,7 @@ df_filtered = df[
 # =========================================================
 page = st.sidebar.selectbox(
     "Navigation",
-    ["Overview", "Workforce Analysis", "Compensation & Seniority", "Employee Explorer"]
+    ["Overview", "Workforce Analysis", "Compensation & Seniority", "Employee Explorer", "Deep HR Insights"]
 )
 
 st.title("🧑‍💼 HR Analytics Dashboard")
@@ -299,3 +299,173 @@ elif page == "Employee Explorer":
                 st.warning("⚠️ Employee is overworked")
             else:
                 st.success("Healthy profile")
+# =========================================================
+# DEEP HR INSIGHTS
+# =========================================================
+elif page == "Deep HR Insights":
+
+    st.subheader("Deep HR Insights Dashboard")
+
+    # =========================================================
+    # 1. AGE DISTRIBUTION BY RESIDENCE (BOX PLOT)
+    # =========================================================
+    st.markdown("### Age Distribution by Residence")
+
+    fig = px.box(
+        df_filtered,
+        x="Residence",
+        y="Age",
+        title="Age Distribution by Residence"
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.divider()
+
+    # =========================================================
+    # 2. HISTOGRAMS (4 METRICS)
+    # =========================================================
+    st.markdown("### Distribution Histograms")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        fig = px.histogram(df_filtered, x="Age", nbins=20, title="Age Distribution")
+        st.plotly_chart(fig, use_container_width=True)
+
+        fig = px.histogram(df_filtered, x="Workload (%)", nbins=20, title="Workload Distribution")
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col2:
+        fig = px.histogram(df_filtered, x="Tenure (Years)", nbins=20, title="Seniority (Tenure) Distribution")
+        st.plotly_chart(fig, use_container_width=True)
+
+        fig = px.histogram(df_filtered, x="Vacation days total", nbins=20, title="Vacation Days Distribution")
+        st.plotly_chart(fig, use_container_width=True)
+
+    st.divider()
+
+    # =========================================================
+    # 3. WORKLOAD BOX PLOTS (DEPT + SENIORITY)
+    # =========================================================
+    st.markdown("### Workload Analysis")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        fig = px.box(
+            df_filtered,
+            x="Department",
+            y="Workload (%)",
+            title="Workload by Department"
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col2:
+        fig = px.box(
+            df_filtered,
+            x="Seniority Level",
+            y="Workload (%)",
+            title="Workload by Seniority Level"
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    st.divider()
+
+    # =========================================================
+    # 4. VACATION BOX PLOTS (DEPT + SENIORITY)
+    # =========================================================
+    st.markdown("### Vacation Usage Analysis")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        fig = px.box(
+            df_filtered,
+            x="Department",
+            y="Vacation Usage",
+            title="Vacation Usage by Department"
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col2:
+        fig = px.box(
+            df_filtered,
+            x="Seniority Level",
+            y="Vacation Usage",
+            title="Vacation Usage by Seniority Level"
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    st.divider()
+
+    # =========================================================
+    # 5. PIE CHARTS (WORKLOAD & VACATION BY SENIORITY)
+    # =========================================================
+    st.markdown("### Composition Analysis (Pie Charts)")
+
+    workload_by_seniority = df_filtered.groupby("Seniority Level")["Workload (%)"].mean().reset_index()
+    vacation_by_seniority = df_filtered.groupby("Seniority Level")["Vacation Usage"].mean().reset_index()
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        fig = px.pie(
+            workload_by_seniority,
+            names="Seniority Level",
+            values="Workload (%)",
+            title="Average Workload by Seniority"
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col2:
+        fig = px.pie(
+            vacation_by_seniority,
+            names="Seniority Level",
+            values="Vacation Usage",
+            title="Average Vacation Usage by Seniority"
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    st.divider()
+
+    # =========================================================
+    # 6. STACKED BAR (WORKLOAD BY DEPT + SENIORITY)
+    # =========================================================
+    st.markdown("### Workload Composition (Stacked Bar)")
+
+    workload_grouped = df_filtered.groupby(
+        ["Department", "Seniority Level"]
+    )["Workload (%)"].mean().reset_index()
+
+    fig = px.bar(
+        workload_grouped,
+        x="Department",
+        y="Workload (%)",
+        color="Seniority Level",
+        title="Workload by Department & Seniority",
+        barmode="stack"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.divider()
+
+    # =========================================================
+    # 7. HEATMAP (VACATION DAYS)
+    # =========================================================
+    st.markdown("### Vacation Heatmap (Department vs Seniority)")
+
+    pivot = df_filtered.pivot_table(
+        index="Department",
+        columns="Seniority Level",
+        values="Vacation days taken",
+        aggfunc="mean"
+    )
+
+    fig = px.imshow(
+        pivot,
+        text_auto=True,
+        title="Average Vacation Days Taken"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
