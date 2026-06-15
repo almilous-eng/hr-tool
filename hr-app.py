@@ -175,24 +175,42 @@ elif page == "Workforce Analysis":
         )
         st.plotly_chart(fig, use_container_width=True)
 
-    with col2:
-        fig = px.bar(
-            df_filtered["Residence"].value_counts().head(10).reset_index(),
-            x="index",
-            y="Residence",
-            title="Top Residences"
-        )
-        st.plotly_chart(fig, use_container_width=True)
+    top_residences = (
+    df_filtered["Residence"]
+    .value_counts()
+    .head(10)
+    .reset_index()
+)
 
-    st.divider()
+    top_residences.columns = ["Residence", "Count"]
 
-    fig = px.box(
-        df_filtered,
-        x="Department",
-        y="Workload (%)",
-        title="Workload by Department"
+    fig = px.bar(
+        top_residences,
+        x="Residence",
+        y="Count",
+        title="Top Residences"
     )
+
     st.plotly_chart(fig, use_container_width=True)
+
+    # with col2:
+    #     fig = px.bar(
+    #         df_filtered["Residence"].value_counts().head(10).reset_index(),
+    #         x="index",
+    #         y="Residence",
+    #         title="Top Residences"
+    #     )
+    #     st.plotly_chart(fig, use_container_width=True)
+
+    # st.divider()
+
+    # fig = px.box(
+    #     df_filtered,
+    #     x="Department",
+    #     y="Workload (%)",
+    #     title="Workload by Department"
+    # )
+    # st.plotly_chart(fig, use_container_width=True)
 
 # =========================================================
 # COMPENSATION & SENIORITY
