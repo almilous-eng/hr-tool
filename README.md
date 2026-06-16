@@ -4,6 +4,8 @@ An interactive HR analytics dashboard built with **Streamlit**, **Plotly**, and 
 
 The application demonstrates how HR data can be transformed into actionable insights through interactive visualizations and business intelligence techniques.
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://hr-tool-p2h3tknotccksp9qdh8ald.streamlit.app/)
+
 ---
 
 ## 🚀 Features
